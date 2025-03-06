@@ -7,17 +7,6 @@ from homeassistant.components.media_player import (
     MediaPlayerDeviceClass,
     MediaPlayerEntity,
     MediaPlayerEntityFeature,
-    SUPPORT_PAUSE,
-    SUPPORT_PLAY,
-    SUPPORT_STOP,
-    SUPPORT_PREVIOUS_TRACK,
-    SUPPORT_NEXT_TRACK,
-    SUPPORT_TURN_ON,
-    SUPPORT_TURN_OFF,
-    SUPPORT_SELECT_SOURCE,
-    SUPPORT_PLAY_MEDIA,
-    SUPPORT_VOLUME_STEP,
-    SUPPORT_VOLUME_MUTE,
 )
 from homeassistant.components.homekit.const import (
     EVENT_HOMEKIT_TV_REMOTE_KEY_PRESSED,
@@ -160,28 +149,28 @@ class JtechMediaPlayer(MediaPlayerEntity):
     def supported_features(self):
         """Flag media player features that are supported."""
         _supported_features = (
-            SUPPORT_SELECT_SOURCE
-            | SUPPORT_PLAY_MEDIA
-            | SUPPORT_PAUSE
-            | SUPPORT_PLAY
-            | SUPPORT_STOP
-            | SUPPORT_PREVIOUS_TRACK
-            | SUPPORT_NEXT_TRACK
+            MediaPlayerEntityFeature.SELECT_SOURCE
+            | MediaPlayerEntityFeature.PLAY_MEDIA
+            | MediaPlayerEntityFeature.PAUSE
+            | MediaPlayerEntityFeature.PLAY
+            | MediaPlayerEntityFeature.STOP
+            | MediaPlayerEntityFeature.PREVIOUS_TRACK
+            | MediaPlayerEntityFeature.NEXT_TRACK
         )
 
         # Add volume controls if available
         cec_volume_control = self._get_cec_volume_control()
         if cec_volume_control and cec_volume_control != "none":
-            _supported_features |= SUPPORT_VOLUME_STEP
-            _supported_features |= SUPPORT_VOLUME_MUTE
+            _supported_features |= MediaPlayerEntityFeature.VOLUME_STEP
+            _supported_features |= MediaPlayerEntityFeature.VOLUME_MUTE
 
         # Add turn on/off controls if HDMI and CAT switches are not available
         hdmi_stream_toggle = self._get_hdmi_stream_toggle()
         cat_stream_toggle = self._get_cat_stream_toggle()
 
         if hdmi_stream_toggle or cat_stream_toggle:
-            _supported_features |= SUPPORT_TURN_ON
-            _supported_features |= SUPPORT_TURN_OFF
+            _supported_features |= MediaPlayerEntityFeature.TURN_ON
+            _supported_features |= MediaPlayerEntityFeature.TURN_OFF
 
         return _supported_features
 
