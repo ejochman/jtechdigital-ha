@@ -61,13 +61,14 @@ async def async_setup_entry(
     # Ensure we have the latest data from the coordinator
     await coordinator.async_config_entry_first_refresh()
 
-    # Create media player entities for each output in the HDMI matrix
-    entities = [
-        JtechMediaPlayer(config_entry, coordinator, output_idx + 1) 
-            for output_idx, output_info in enumerate(coordinator.outputs)
-    ]
+    # Create media player entities
+    entities = [JtechMasterMediaPlayer(config_entry, coordinator)]
 
-    entities.append(JtechMasterMediaPlayer(config_entry, coordinator))
+    # Create media player entities for each output in the HDMI matrix
+    entities.extend([
+        JtechMediaPlayer(config_entry, coordinator, output_idx + 1)
+            for output_idx, output_info in enumerate(coordinator.outputs)
+    ])
 
     # Add the media player entities to Home Assistant
     async_add_entities(entities, update_before_add=True)
@@ -395,12 +396,11 @@ class JtechMasterMediaPlayer(MediaPlayerEntity):
         """Return the device info."""
 
         return DeviceInfo(
-            identifiers={ (DOMAIN, self.unique_id) },
+            identifiers={ (DOMAIN, self._config_entry.unique_id) },
             name=f"{ATTR_MANUFACTURER} HDMI Matrix",
             manufacturer=ATTR_MANUFACTURER,
             model=self._coordinator.data["model"],
             sw_version=self._coordinator.data["version"],
-            via_device=(DOMAIN, self._config_entry.unique_id),
             configuration_url=f"http://{self._coordinator.data['hostname']}" if self._coordinator.data["hostname"] else None
         )
     
